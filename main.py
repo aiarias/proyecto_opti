@@ -7,10 +7,10 @@ import pandas as pd
 
 # Conjuntos
 A = ... # conjunto de vehículos
-M = ... # conjunto de paquetes
+M = range(1) # conjunto de paquetes
 J = ... # conjunto de ubicaciones
 L = ... # tiempo de contrato
-i = ... # paquetes de la empresa m
+i = range(37) # paquetes de la empresa m
 
 # Parámetros
 N = ... # cantidad de paquetes de la empresa m
