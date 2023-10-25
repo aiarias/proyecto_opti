@@ -8,15 +8,20 @@ import pandas as pd
 # Conjuntos
 A = ... # conjunto de vehículos
 M = ... # conjunto de paquetes
-I = ... # conjunto de ubicaciones iniciales
-J = ... # conjunto de ubicaciones finales
+J = ... # conjunto de ubicaciones
 L = ... # tiempo de contrato
+i = ... # paquetes de la empresa m
 
 # Parámetros
+N = ... # cantidad de paquetes de la empresa m
+E = ... # emisiones de carbono del vehículo a
 C = ... # capacidad máxima de cada vehículo
-D = ... # emisiones de carbono por paquete
-E = ... # emisiones de carbono entre ubicaciones
+D = ... # distancia de la empresa m a la ubicación j
+D = ... # distancia de la ubicación j1 a j2
+t = ... # tiempo que demora el vehículo a en recorrer un kilómetro
 T = ... # tiempo total de las entregas
+p = ... # pago extra
+M = 10**10
 
 # Crear un modelo vacio
 
