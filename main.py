@@ -6,7 +6,7 @@ import pandas as pd
 
 
 # Conjuntos
-A = ... # conjunto de vehículos
+A = range(4) # conjunto de vehículos
 M = range(1) # conjunto de paquetes
 J = ... # conjunto de ubicaciones
 L = ... # tiempo de contrato
@@ -20,7 +20,7 @@ D = ... # distancia de la empresa m a la ubicación j
 D = ... # distancia de la ubicación j1 a j2
 t = ... # tiempo que demora el vehículo a en recorrer un kilómetro
 T = ... # tiempo total de las entregas
-p = ... # pago extra
+p = 4136 # pago extra
 M = 10**10
 
 # Crear un modelo vacio
