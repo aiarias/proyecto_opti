@@ -1,6 +1,7 @@
 from gurobipy import GRB, Model, quicksum
 from random import randint, uniform
 import pandas as pd
+import parametros as p
 
 #Procesar datos
 
@@ -13,7 +14,7 @@ L = ... # tiempo de contrato
 i = range(37) # paquetes de la empresa m
 
 # Parámetros
-N = ... # cantidad de paquetes de la empresa m
+N = 37 # cantidad de paquetes de la empresa m
 E = ... # emisiones de carbono del vehículo a
 C = ... # capacidad máxima de cada vehículo
 D = ... # distancia de la empresa m a la ubicación j
