@@ -1,28 +1,66 @@
 from gurobipy import GRB, Model, quicksum
 from random import randint, uniform
 import pandas as pd
-import parametros as p
 
 #Procesar datos
 
+# Escribe los datos de distnacia en D_e y D
+file_path = 'distancias_santiago.xlsx'
+df = pd.read_excel(file_path, engine='openpyxl', sheet_name='Sheet1')  # Asegúrate de usar el nombre correcto de la hoja
+
+# Eliminando cualquier fila o columna que no contenga datos
+df.dropna(how="all", inplace=True)
+df.dropna(axis=1, how="all", inplace=True)
+
+# Asumiendo que la primera columna es 'Direcciones' y contiene todas las direcciones
+direcciones = df['Direcciones'].tolist()
+
+# Distancia de la empresa m a la ubicación j
+# Suponiendo que 'Camino Lo Boza, 120, Pudahuel, Chile' es la empresa m
+D_e = df.set_index('Direcciones')['Camino Lo Boza, 120, Pudahuel, Chile'].to_dict()
+
+# Distancia entre cada ubicación
+D = {}
+for i in direcciones:
+    for j in direcciones:
+        if i != j:
+            D[(i, j)] = df.loc[df['Direcciones'] == i, j].values[0]
+
+
+# Cargamos informacion vehiculo/emisiones
+df_emisiones = pd.read_excel("Datos.xlsx", sheet_name="Emisiones")
+
+# Crear un diccionario con los nombres de los vehículos como claves y sus emisiones como valores
+emisiones_dict = dict(zip(df_emisiones['Tipo de Vehículo / Combustible'], df_emisiones['Emisiones de CO2 (g CO2/km)']))
+
+#cargar datos capacidad 
+df_capacidad = pd.read_excel("Datos.xlsx", sheet_name="Capacidad")
+
+# Crear un diccionario con los nombres de los vehículos como claves y sus capacidades como valores
+capacidad_dict = dict(zip(df_capacidad['Tipo de Vehículo / Combustible'], df_capacidad['Capacidad (unidades)']))
+
 
 # Conjuntos
-A = range(4) # conjunto de vehículos
-M = range(1) # conjunto de paquetes
-J = ... # conjunto de ubicaciones
-L = ... # tiempo de contrato
-i = range(37) # paquetes de la empresa m
+A = list(emisiones_dict.keys()) # conjunto de vehículos
+M = list(range(101)) # conjunto de paquetes
+J = direcciones # conjunto de ubicaciones
+L = 0 # tiempo de contrato
+I = range(37) # paquetes de la empresa m
+
+print(A)
+print(M)
+print(J)
 
 # Parámetros
-N = 37 # cantidad de paquetes de la empresa m
-E = ... # emisiones de carbono del vehículo a
-C = ... # capacidad máxima de cada vehículo
-D = ... # distancia de la empresa m a la ubicación j
-D = ... # distancia de la ubicación j1 a j2
-t = ... # tiempo que demora el vehículo a en recorrer un kilómetro
+N = 100 # cantidad de paquetes de la empresa m
+E = emisiones_dict # emisiones de carbono del vehículo a
+C = capacidad_dict # capacidad máxima de cada vehículo
+#D_e = ... # distancia de la empresa m a la ubicación j
+#D = ... # distancia de la ubicación j1 a j2
+t = 30 # velocidad promedio de un auto en recorrer un kilometro
 T = ... # tiempo total de las entregas
-p = 4136 # pago extra
-M = 10**10
+p = 4500 # pago extra
+#M = 10**10
 
 # Crear un modelo vacio
 
