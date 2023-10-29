@@ -9,8 +9,8 @@ file_path = 'distancias_santiago.xlsx'
 df = pd.read_excel(file_path, engine='openpyxl', sheet_name='Sheet1')  # Asegúrate de usar el nombre correcto de la hoja
 
 # Eliminando cualquier fila o columna que no contenga datos
-df.dropna(how="all", inplace=True)
-df.dropna(axis=1, how="all", inplace=True)
+# df.dropna(how="all", inplace=True)
+# df.dropna(axis=1, how="all", inplace=True)
 
 # Asumiendo que la primera columna es 'Direcciones' y contiene todas las direcciones
 direcciones = df['Direcciones'].tolist()
@@ -23,7 +23,7 @@ D_e = df.set_index('Direcciones')['Camino Lo Boza, 120, Pudahuel, Chile'].to_dic
 D = {}
 for i in direcciones:
     for j in direcciones:
-        if i != j:
+        #if i != j:
             D[(i, j)] = df.loc[df['Direcciones'] == i, j].values[0]
 
 
@@ -48,11 +48,11 @@ L = 0 # tiempo de contrato
 I = range(37) # paquetes de la empresa m
 
 # print(A)
-# print(M)
+print(M)
 print(J)
-print(D['Camino Lo Boza, 120, Pudahuel, Chile', 'Glaciar Aguila Dos 2592, MAIPÚ, Chile'])
+print(D['Camino Lo Boza, 120, Pudahuel, Chile', 'Camino Lo Boza, 120, Pudahuel, Chile'])
 
-# Parámetros
+# Parámetros 
 N = 100 # cantidad de paquetes de la empresa m
 E = emisiones_dict # emisiones de carbono del vehículo a
 C = capacidad_dict # capacidad máxima de cada vehículo
@@ -139,7 +139,7 @@ model.optimize()
 
 
 # Mostrar resultados
-for v in m.getVars():
-    print(f'{v.varName} = {v.x}')
+# for v in model.getVars():
+#     print(f'{v.varName} = {v.X}')
 
-print(f'Objetivo: {m.objVal}')
+# print(f'Objetivo: {model.objVal}')
