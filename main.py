@@ -53,15 +53,15 @@ print(J)
 print(D['Camino Lo Boza, 120, Pudahuel, Chile', 'Camino Lo Boza, 120, Pudahuel, Chile'])
 
 # Parámetros 
-N = 100 # cantidad de paquetes de la empresa m
+N = 37 # cantidad de paquetes de la empresa m
 E = emisiones_dict # emisiones de carbono del vehículo a
 C = capacidad_dict # capacidad máxima de cada vehículo
 #D_e = ... # distancia de la empresa m a la ubicación j
 #D = ... # distancia de la ubicación j1 a j2
-t = 30 # velocidad promedio de un auto en recorrer un kilometro
-T = ... # tiempo total de las entregas
+t = 0.0263 # velocidad promedio de un auto en recorrer un kilometro
+T = 8.3 # tiempo total de las entregas
 p = 4500 # pago extra
-#M = 10**10
+Q = 10**10
 
 # Crear un modelo vacio
 
@@ -81,42 +81,35 @@ model.update()
 # Restricciones
 
 # 1. Restricción de capacidad
-#for a in A:
-#    for j in J:
-#        model.addConstr(quicksum(X[a,m,i,j] for m in M for i in I) <= C[a])
 
 model.addConstrs((C[a] >= quicksum(X[a,i,j] for i in I) for a in A for j in J), name="R1")
 
 # 2. Cada paquete es transportado por un solo vehículo
-# for m in M:
-#     for i in I:
-#         for j in J:
-#             model.addConstr(quicksum(X[a,m,i,j] for a in A) == 1)
 
 model.addConstrs((1 == quicksum(X[a,i,j] for a in A) for i in I for j in J), name="R2")
 
 # 3. Cada ubicación de entrega es atendida una vez
-# for i in I:
-#     model.addConstr(quicksum(W[a,i,j] for a in A for j in J) == 1)
 
-model.addConstrs((1 == quicksum(X[a,i,j] for a in A for j in J) for i in I), name="R3")
+model.addConstrs((1 == quicksum(X[a,i,j] for a in A) for i in I for j in J), name="R3")
 
 # 4. Restricción de flujo
-# for a in A:
-#     for i in I:
-#         model.addConstr(quicksum(W[a,j,i] for j in J) == 1)
-#         model.addConstr(quicksum(W[a,i,j] for j in J) == 1)
+
 model.addConstrs((1 == quicksum(W[a,j1,j2] for j1 in J) for j2 in J for a in A), name="Flujo1")
 model.addConstrs((1 == quicksum(W[a,j1,j2] for j2 in J) for j1 in J for a in A), name="Flujo2")
 
 
-# 5. Restricción de recorrido
+#5. Restricción de recorrido
 # for a in A:
 #     for i in range(1, len(I)):
 #         for j in range(i+1, len(J)+1):
 #             model.addConstr(Y[i] - Y[j] + len(J)*W[a,i,j] <= len(J) - 1)
 
-#model.addConstrs((Y[j1] - Y[j2] + len(J)*W[a,j1,j2] <= len(J) - 1 for a in A for j1 in J for j2 in J if j1 != j2 if j1 >= 1 if j2 >= 1 if j1 <= (len(J) + 1) if j2 <= (len(J) + 1)), name="R5")
+# model.addConstrs((Y[j1] - Y[j2] + len(J)*W[a,j1,j2] <= len(J) - 1 for a in A for j1 in J for j2 in J if j1 != j2 if j1 >= 1 if j2 >= 1 if j1 <= (len(J) + 1) if j2 <= (len(J) + 1)), name="R5")
+
+# J_indices = list(range(1, len(J)+1))
+# model.addConstrs((Y[j1] - Y[j2] + len(J_indices)*W[a,j1,j2] <= len(J_indices) - 1 
+#                   for a in A for j1 in J_indices for j2 in J_indices if j1 != j2), name="R5")
+
 
 # 6. Restricción de tiempo
 # for a in A:
@@ -125,7 +118,28 @@ model.addConstrs((1 == quicksum(W[a,j1,j2] for j2 in J) for j1 in J for a in A),
 
 #model.addConstrs((1 < T - quicksum(X[a,i,m,j] * )))
 
+# model.addConstrs((1 < T - quicksum(X[a,i,j] * D[m,j] * t for m in M or i in I for j in J) + quicksum(W[a,j1,j2] * D[j1,j2] * t for j1 in J for j2 in J) + Q * Z[a] for a in A), name="Tiempo1")
+# model.addConstrs((0 < quicksum(X[a,i,j] * D[m,j] * t for m in M or i in I for j in J) + quicksum(W[a,j1,j2] * D[j1,j2] * t for j1 in J for j2 in J) - T + Q*(1 - Z[a]) for a in A),name="Tiempo2")
+# R6a: Si el tiempo total de entregas supera el tiempo de contrato T para vehículo a
+# print(W.keys(
+#              ))
 
+# for a in A:
+#     model.addConstr(
+#         quicksum(quicksum(X[a, i, m] * D[m, j] * t for j in J for m in M) for i in I) + 
+#         quicksum(quicksum(W[a, i, j] * D[i, j] * t for j in J) for i in I) +
+#         M * Z[a] >= T + 1, 
+#         name="R6a_{}".format(a)
+#     )
+
+# # R6b: Si el tiempo total de entregas es menor o igual al tiempo de contrato T para vehículo a
+# for a in A:
+#     model.addConstr(
+#         quicksum(quicksum(X[a, i, m] * D[m, j] * t for j in J for m in M) for i in I) + 
+#         quicksum(quicksum(W[a, i, j] * D[i, j] * t for j in J) for i in I) -
+#         T + M * (1 - Z[a]) > 0, 
+#         name="R6b_{}".format(a)
+#     )
 # Funcion objetivo
 
 #objetivo = quicksum(X[a,m,j]*D[m,i]*E[a] + W[a,i,j]*D[i,j]*E[a] for a in A for m in M for i in I for j in J)
