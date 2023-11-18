@@ -164,8 +164,8 @@ for a in A:
     recorrido = []
     for j in J:
         for i in I:
-            # print(f"Se le asignó el paquete {i} para la ubicación de entrega {j} al vehículo {a}")
             if X.x == 1:
+                # print(f"Se le asignó el paquete {i} para la ubicación de entrega {j} al vehículo {a}")
                 recorrido.append(j)
     if Z.x == 1:
         print(f"El vehículo {a} sobrepasó el tiempo de contrato {T}")
