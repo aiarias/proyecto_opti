@@ -165,11 +165,11 @@ for a in A:
     for j1 in J:
         for j2 in J:
             for i in I:
-                if X.x == 1:
+                if X[a, i, j1].x == 1:
                     # print(f"Se le asignó el paquete {i} para la ubicación de entrega {j1} al vehículo {a}")
                     recorrido.append(j1)
-                if W.x == 1:
+                if W[a, j1, j2].x == 1:
                     recorrido.append(j2) # No estoy segura de esta parte
-    if Z.x == 1:
+    if Z[a].x == 1:
         print(f"El vehículo {a} sobrepasó el tiempo de contrato {T}")
     recorrido_total.append(recorrido)
