@@ -162,11 +162,14 @@ model.optimize()
 recorrido_total = []
 for a in A:
     recorrido = []
-    for j in J:
-        for i in I:
-            if X.x == 1:
-                # print(f"Se le asignó el paquete {i} para la ubicación de entrega {j} al vehículo {a}")
-                recorrido.append(j)
+    for j1 in J:
+        for j2 in J:
+            for i in I:
+                if X.x == 1:
+                    # print(f"Se le asignó el paquete {i} para la ubicación de entrega {j1} al vehículo {a}")
+                    recorrido.append(j1)
+                if W.x == 1:
+                    recorrido.append(j2) # No estoy segura de esta parte
     if Z.x == 1:
         print(f"El vehículo {a} sobrepasó el tiempo de contrato {T}")
     recorrido_total.append(recorrido)
