@@ -152,8 +152,21 @@ model.setObjective(objetivo, GRB.MINIMIZE)
 model.optimize()
 
 
-# Mostrar resultados
-# for v in model.getVars():
-#     print(f'{v.varName} = {v.X}')
+# print(f"El valor objetivo es de: {model.ObjVal}")
 
-# print(f'Objetivo: {model.objVal}')
+# print("\n"+"-"*9+" Restricciones Activas "+"-"*9)
+# for constr in model.getConstrs():
+#     if constr.getAttr("slack") == 0:
+#         print(f"La restriccion {constr.name} está activa")
+
+recorrido_total = []
+for a in A:
+    recorrido = []
+    for j in J:
+        for i in I:
+            # print(f"Se le asignó el paquete {i} para la ubicación de entrega {j} al vehículo {a}")
+            if X.x == 1:
+                recorrido.append(j)
+    if Z.x == 1:
+        print(f"El vehículo {a} sobrepasó el tiempo de contrato {T}")
+    recorrido_total.append(recorrido)
