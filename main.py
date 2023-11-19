@@ -26,7 +26,6 @@ for i in direcciones:
         #if i != j:
             D[(i, j)] = df.loc[df['Direcciones'] == i, j].values[0]
 
-
 # Cargamos informacion vehiculo/emisiones
 df_emisiones = pd.read_excel("Datos.xlsx", sheet_name="Emisiones")
 
@@ -42,15 +41,11 @@ capacidad_dict = dict(zip(df_capacidad['Tipo de Vehiculo / Combustible'], df_cap
 
 # Conjuntos
 A = list(emisiones_dict.keys()) # conjunto de vehículos
-# M = list(['Camino Lo Boza, 120, Pudahuel, Chile']) # empresas
 I = direcciones # conjunto de ubicaciones
 L = 0 # tiempo de contrato
 
-# print(A)
-# print(M)
-# print(J)
-# print(D['Camino Lo Boza, 120, Pudahuel, Chile', 'Camino Lo Boza, 120, Pudahuel, Chile'])
-
+print(I)
+print(D["Camino Lo Boza, 120, Pudahuel, Chile", "policarpo toro 173, MAIPU, Chile"])
 # Parámetros 
 N = 37 # cantidad de paquetes de la empresa m
 E = emisiones_dict # emisiones de carbono del vehículo a
@@ -75,11 +70,6 @@ Z = model.addVars(A, vtype=GRB.BINARY, name = "Z")
 R = model.addVars(I, vtype=GRB.CONTINUOUS, name = "R")
 U = model.addVars(A, I, vtype=GRB.INTEGER, name = "U")
 
-# X = model.addVars(A, I, J, vtype=GRB.BINARY, name="X")
-# W = model.addVars(A, J, J, vtype=GRB.BINARY, name="W")
-# Z = model.addVars(A, vtype=GRB.BINARY, name="Z")
-# Y = model.addVars(J, vtype=GRB.CONTINUOUS, name="Y")
-
 # Llama al update para agregar las variables al modelo
 model.update()
 
@@ -102,8 +92,6 @@ model.addConstrs((1 == quicksum(X[a, i, j] for a in A for j in I) for i in I), n
 
 # 4. Restricción de flujo
 
-# model.addConstrs((1 == quicksum(W[a,j1,j2] for j1 in J) for j2 in J for a in A), name="Flujo1")
-# model.addConstrs((1 == quicksum(W[a,j1,j2] for j2 in J) for j1 in J for a in A), name="Flujo2")
 model.addConstrs((1 == quicksum(X[a, i, j] for i in I) - quicksum(X[a, j, i] for i in I if i != 'Camino Lo Boza, 120, Pudahuel, Chile') for j in I for a in A if i == 'Camino Lo Boza, 120, Pudahuel, Chile'), name = "Flujo1")
 model.addConstrs((0 == quicksum(X[a, i, j] for i in I) - quicksum(X[a, j, i] for i in I if i != 'Camino Lo Boza, 120, Pudahuel, Chile') for j in I for a in A if i == 'Camino Lo Boza, 120, Pudahuel, Chile'), name = "Flujo2")
 
@@ -117,14 +105,23 @@ model.addConstrs((1 <= U[a, j] for j in I for a in A), name = "Sub-tours3")
 
 # 6. Restricción de tiempo
 
-model.addConstrs((1 < T - quicksum(X[a, i, j]*D[i, j]*t for i in I for j in I) + M*Z[a] for a in A), name = "Tiempo1")
-model.addConstrs((0 < quicksum(X[a, i, j]*D[i, j]*t for i in I for j in I) - T + M*(1 - Z[a]) for a in A), name = "Tiempo2")
+model.addConstrs((T - quicksum(X[a, i, j]*D[i, j]*t for i in I for j in I) + M*Z[a] >= 1 for a in A), name="Tiempo1")
+model.addConstrs((quicksum(X[a, i, j]*D[i, j]*t for i in I for j in I) - T + M*(1 - Z[a]) >= 0 for a in A), name="Tiempo2")
+
 
 
 # 7. Relación entre variables
 
-model.addConstrs((Y[i, a] == quicksum(X[a, i, j] for a in A) for i in I for j in I), name = "Relación1")
+#model.addConstrs((Y[i, a] == quicksum(X[a, i, j] for a in A) for i in I for j in I), name = "Relación1")
+model.addConstrs((Y[a, i] == quicksum(X[a, i, j] for j in I) for i in I for a in A), name="Relacion1")
+
 model.addConstrs((Y[a, 'Camino Lo Boza, 120, Pudahuel, Chile'] == quicksum(X[a, i, j] for i in I) for a in A for j in I), name = "Relación2")
+
+
+# model.addConstrs((Y[i, a] == quicksum(X[a, i, j] for j in I) for i in I for a in A), name="Relacion1")
+# model.addConstrs((Y[a] == quicksum(X[a, i, j] for i in I) for a in A), name="Relacion2")
+
+#model.addConstrs((Yd[a] == quicksum(X[a, i, d] for i in I) for a in A), name="Relacion2")
 
 
 # Funcion objetivo
