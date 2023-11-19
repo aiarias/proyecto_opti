@@ -44,8 +44,9 @@ A = list(emisiones_dict.keys()) # conjunto de vehículos
 I = direcciones # conjunto de ubicaciones
 L = 0 # tiempo de contrato
 
-print(I)
-print(D["Camino Lo Boza, 120, Pudahuel, Chile", "policarpo toro 173, MAIPU, Chile"])
+# print(I)
+# print(D["Camino Lo Boza, 120, Pudahuel, Chile", "policarpo toro 173, MAIPU, Chile"])
+
 # Parámetros 
 N = 37 # cantidad de paquetes de la empresa m
 E = emisiones_dict # emisiones de carbono del vehículo a
@@ -56,6 +57,10 @@ t = 0.0263 # velocidad promedio de un auto en recorrer un kilometro
 T = 8.3 # tiempo total de las entregas
 p = 4500 # pago extra
 M = 10**10
+
+# for i in I:
+#     for j in I:
+#         print(D[i, j])
 
 # Crear un modelo vacio
 
@@ -92,8 +97,12 @@ model.addConstrs((1 == quicksum(X[a, i, j] for a in A for j in I) for i in I), n
 
 # 4. Restricción de flujo
 
-model.addConstrs((1 == quicksum(X[a, i, j] for i in I) - quicksum(X[a, j, i] for i in I if i != 'Camino Lo Boza, 120, Pudahuel, Chile') for j in I for a in A if i == 'Camino Lo Boza, 120, Pudahuel, Chile'), name = "Flujo1")
-model.addConstrs((0 == quicksum(X[a, i, j] for i in I) - quicksum(X[a, j, i] for i in I if i != 'Camino Lo Boza, 120, Pudahuel, Chile') for j in I for a in A if i == 'Camino Lo Boza, 120, Pudahuel, Chile'), name = "Flujo2")
+model.addConstrs((1 == quicksum(X[a, 'Camino Lo Boza, 120, Pudahuel, Chile', j] for i in I) - quicksum(X[a, j, 'Camino Lo Boza, 120, Pudahuel, Chile'] for i in I) \
+    for j in I for a in A), name = "Flujo1")
+model.addConstrs((0 == quicksum(X[a, i, j] for i in I if i != 'Camino Lo Boza, 120, Pudahuel, Chile') - quicksum(X[a, j, i] for i in I if i != 'Camino Lo Boza, 120, Pudahuel, Chile') \
+    for j in I if j != 'Camino Lo Boza, 120, Pudahuel, Chile' for a in A), name = "Flujo2")
+model.addConstrs((-1 == quicksum(X[a, 'Camino Lo Boza, 120, Pudahuel, Chile', j] for i in I) - quicksum(X[a, j, 'Camino Lo Boza, 120, Pudahuel, Chile'] for i in I) \
+    for j in I for a in A), name = "Flujo3")
 
 
 #5. Sub-tours
@@ -113,9 +122,9 @@ model.addConstrs((quicksum(X[a, i, j]*D[i, j]*t for i in I for j in I) - T + M*(
 # 7. Relación entre variables
 
 #model.addConstrs((Y[i, a] == quicksum(X[a, i, j] for a in A) for i in I for j in I), name = "Relación1")
-model.addConstrs((Y[a, i] == quicksum(X[a, i, j] for j in I) for i in I for a in A), name="Relacion1")
+model.addConstrs((Y[a, i] == quicksum(X[a, i, j] for i in I) for j in I for a in A), name="Relacion1")
 
-model.addConstrs((Y[a, 'Camino Lo Boza, 120, Pudahuel, Chile'] == quicksum(X[a, i, j] for i in I) for a in A for j in I), name = "Relación2")
+model.addConstrs((Y[a, 'Camino Lo Boza, 120, Pudahuel, Chile'] == quicksum(X[a, i, 'Camino Lo Boza, 120, Pudahuel, Chile'] for i in I) for a in A), name = "Relación2")
 
 
 # model.addConstrs((Y[i, a] == quicksum(X[a, i, j] for j in I) for i in I for a in A), name="Relacion1")
@@ -145,16 +154,18 @@ model.optimize()
 
 recorrido_total = []
 for a in A:
-    recorrido = []
-    for j1 in J:
-        for j2 in J:
-            for i in I:
-                if X[a, i, j1].x == 1:
-                    # print(f"Se le asignó el paquete {i} para la ubicación de entrega {j1} al vehículo {a}")
-                    # recorrido.append(j1)
-                    if W[a, j1, j2].x == 1 and j1 != j2:
-                        recorrido.append(j2) # No estoy segura de esta parte
-    if Z[a].x == 1:
-        print(f"El vehículo {a} sobrepasó el tiempo de contrato {T}")
+    recorrido = ['Camino Lo Boza, 120, Pudahuel, Chile']
+    for i in I:
+        for j in I:
+            print(X[a, i, j].x)
+            if Y[a, i].x == 1:
+                if X[a, i, j].x == 1:
+                    print(f"El vehículo {a} va de {i} a {j}")
+                    recorrido.append(j)
+    
+    # if Z[a].x == 1:
+    #     print(f"El vehículo {a} sobrepasó el tiempo de contrato")
+    
     recorrido_total.append(recorrido)
+
 print(recorrido_total)
