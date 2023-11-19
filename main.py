@@ -97,12 +97,17 @@ model.addConstrs((1 == quicksum(X[a, i, j] for a in A for j in I) for i in I), n
 
 # 4. Restricción de flujo
 
-model.addConstrs((1 == quicksum(X[a, 'Camino Lo Boza, 120, Pudahuel, Chile', j] for i in I) - quicksum(X[a, j, 'Camino Lo Boza, 120, Pudahuel, Chile'] for i in I) \
-    for j in I for a in A), name = "Flujo1")
-model.addConstrs((0 == quicksum(X[a, i, j] for i in I if i != 'Camino Lo Boza, 120, Pudahuel, Chile') - quicksum(X[a, j, i] for i in I if i != 'Camino Lo Boza, 120, Pudahuel, Chile') \
-    for j in I if j != 'Camino Lo Boza, 120, Pudahuel, Chile' for a in A), name = "Flujo2")
-model.addConstrs((-1 == quicksum(X[a, 'Camino Lo Boza, 120, Pudahuel, Chile', j] for i in I) - quicksum(X[a, j, 'Camino Lo Boza, 120, Pudahuel, Chile'] for i in I) \
-    for j in I for a in A), name = "Flujo3")
+# model.addConstrs((1 == quicksum(X[a, 'Camino Lo Boza, 120, Pudahuel, Chile', j] for i in I) - quicksum(X[a, j, 'Camino Lo Boza, 120, Pudahuel, Chile'] for i in I) \
+#     for j in I for a in A), name = "Flujo1")
+# model.addConstrs((0 == quicksum(X[a, i, j] for i in I if i != 'Camino Lo Boza, 120, Pudahuel, Chile') - quicksum(X[a, j, i] for i in I if i != 'Camino Lo Boza, 120, Pudahuel, Chile') \
+#     for j in I if j != 'Camino Lo Boza, 120, Pudahuel, Chile' for a in A), name = "Flujo2")
+# model.addConstrs((-1 == quicksum(X[a, 'Camino Lo Boza, 120, Pudahuel, Chile', j] for i in I) - quicksum(X[a, j, 'Camino Lo Boza, 120, Pudahuel, Chile'] for i in I) \
+#     for j in I for a in A), name = "Flujo3")
+
+model.addConstrs((0 == quicksum(X[a, i, 'Camino Lo Boza, 120, Pudahuel, Chile'] for i in I) for a in A), name = "Flujo1")
+model.addConstrs((0 == quicksum(X[a, 'Batalla de Chacabuco 1147, MAIPU, Chile', j] for j in I) for a in A), name = "Flujo2")
+model.addConstrs((1 == quicksum(X[a, i, j] for i in I if i != 'Camino Lo Boza, 120, Pudahuel, Chile') for a in A for j in I if j != 'Batalla de Chacabuco 1147, MAIPU, Chile'), name = "Flujo3")
+model.addConstrs((1 == quicksum(X[a, i, j] for j in I if j != 'Batalla de Chacabuco 1147, MAIPU, Chile') for a in A for i in I if i != 'Camino Lo Boza, 120, Pudahuel, Chile'), name = "Flujo4")
 
 
 #5. Sub-tours
@@ -122,9 +127,9 @@ model.addConstrs((quicksum(X[a, i, j]*D[i, j]*t for i in I for j in I) - T + M*(
 # 7. Relación entre variables
 
 #model.addConstrs((Y[i, a] == quicksum(X[a, i, j] for a in A) for i in I for j in I), name = "Relación1")
-model.addConstrs((Y[a, i] == quicksum(X[a, i, j] for i in I) for j in I for a in A), name="Relacion1")
 
-model.addConstrs((Y[a, 'Camino Lo Boza, 120, Pudahuel, Chile'] == quicksum(X[a, i, 'Camino Lo Boza, 120, Pudahuel, Chile'] for i in I) for a in A), name = "Relación2")
+model.addConstrs((Y[a, i] == quicksum(X[a, i, j] for i in I) for j in I for a in A), name="Relacion1")
+model.addConstrs((Y[a, 'Batalla de Chacabuco 1147, MAIPU, Chile'] == quicksum(X[a, i, 'Batalla de Chacabuco 1147, MAIPU, Chile'] for i in I) for a in A), name = "Relación2")
 
 
 # model.addConstrs((Y[i, a] == quicksum(X[a, i, j] for j in I) for i in I for a in A), name="Relacion1")
